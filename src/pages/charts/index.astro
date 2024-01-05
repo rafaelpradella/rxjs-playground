@@ -1,10 +1,12 @@
 ---
-import Layout from '../../layouts/Layout.astro';
+import Layout from '@layouts/Layout.astro';
+import { MainChart } from '@components/Charts';
 ---
 
 <Layout title="dxCharts Lite | Playground" theme="devexp">
 	<main>
 		<h1><span class="text-gradient">dxCharts</span> Playground</h1>
+    <MainChart client:only="solid" />
 	</main>
 </Layout>
 
@@ -23,7 +25,6 @@ import Layout from '../../layouts/Layout.astro';
 		font-weight: 700;
 		line-height: 1;
 		text-align: center;
-		margin-bottom: 1em;
 	}
 	.text-gradient {
 		background-image: var(--accent-gradient);
