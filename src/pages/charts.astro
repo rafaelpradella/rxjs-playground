@@ -1,12 +1,12 @@
 ---
 import Layout from '@layouts/Layout.astro';
-import { MainChart } from '@components/Charts';
+import { ChartsBody } from '@components/Charts';
 ---
 
 <Layout title="dxCharts Lite | Playground" theme="devexp">
 	<main>
 		<h1><span class="text-gradient">dxCharts</span> Playground</h1>
-    <MainChart client:only="solid" />
+    <ChartsBody client:only="solid" />
 	</main>
 </Layout>
 
