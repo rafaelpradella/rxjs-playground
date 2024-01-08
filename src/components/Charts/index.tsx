@@ -4,52 +4,42 @@ import {
   generateCandlesData,
 } from "@devexperts/dxcharts-lite";
 import { For, Show, createEffect, createSignal } from "solid-js";
+import { pipe } from "fp-ts/function";
+import { none, fromNullable, fold } from "fp-ts/Option";
+import type { Option } from "fp-ts/Option";
 
-import { DEFAULT_CHART_CONFIG } from "./style/charts.config";
+import type { TChartsData } from "./data/charts.config";
+import { DEFAULT_CHART_CONFIG, CHARTS_LIST_INIT } from "./data/charts.config";
 import css from "./style/charts.module.css";
 
-export const ChartsBody = () => {
-  return (
-    <section>
-      <For each={Array(5)}>
-        {(_, i) => {
-          const candlesDataMock = generateCandlesData({ quantity: 1000 });
-          return (<SimpleChart data={candlesDataMock} onCreated={() => alert(`Created ${i()}`)} />)
-        }}
-      </For>
-    </section>
-  )
-  
-}
-
-export const SimpleChart = (props: { data: ReturnType<typeof generateCandlesData>, onCreated?: Function }) => {
-  const [dxChart, setDxChart] = createSignal<Chart>();
-
+export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
   let chartEl!: HTMLDivElement;
-  const hasData = !!props.data && props.data.length > 0 ;
+  const chartData = generateCandlesData({ quantity: dataSize ?? 1000, withVolume: true });
+  const hasData = !!chartData && chartData?.length > 0;
 
+  const [chartInstance, setChartInstance] = createSignal<Option<Chart>>(none);
+  
   createEffect(() => {
-    if (!hasData || !chartEl) return;
+    if (!chartData || !chartEl) return;
+    const api = createChart(chartEl, DEFAULT_CHART_CONFIG);
 
-    setDxChart(createChart(chartEl, DEFAULT_CHART_CONFIG));
-    dxChart()?.setData({ candles: props.data });
-    props?.onCreated?.();
+    setChartInstance(fromNullable(api));
+    pipe((chartInstance()), fold(() => {}, (c) => {
+      init?.(c, chartData);
+      c.setData({ candles: chartData });
+    }))
   });
 
-  const ChartsInfo = () => (
-    <Show
-      when={hasData}
-      fallback={<code>w/o candles</code>}
-    >
+  const repopulateChart = () => pipe(
+    chartInstance(),
+    fold(() => {}, (c) => c.updateData({ candles: generateCandlesData({ quantity: dataSize ?? 1000, withVolume: true }) }))
+  );
+
+  const CandlesInfoNav = () => (
+    <Show when={hasData} fallback={<code>w/o candles</code>}>
       <div>
-        <code>🕯️ {props.data.length} candles: </code>
-        <button
-          onClick={() =>
-            dxChart()?.updateData({
-              candles: generateCandlesData({ quantity: 1000 }),
-            })
-          }
-        >
+        <code>🕯️ {chartData.length} candles: </code>
+        <button onClick={repopulateChart}>
           Repopulate Chart
         </button>
       </div>
@@ -57,11 +47,25 @@ export const SimpleChart = (props: { data: ReturnType<typeof generateCandlesData
   );
 
   return (
-    <div>
+    <section>
+      <h2>{title}</h2>
       <div class={css.wrapper} ref={chartEl}>
         {!hasData && <code>LOADING...</code>}
       </div>
-      <ChartsInfo />
+      <div style={{ "font-size": ".7rem" }}>
+        <CandlesInfoNav />
+      </div>
+    </section>
+  )
+
+}
+
+export const ChartsBody = () => {
+  return (
+    <div style={{ display: "flex", "flex-direction": "column", gap: '2rem' }}>
+      <For each={CHARTS_LIST_INIT}>
+        {({ title, init, dataSize }) => <ChartItem title={title} init={init} dataSize={dataSize } />}
+      </For>
     </div>
   );
 };
