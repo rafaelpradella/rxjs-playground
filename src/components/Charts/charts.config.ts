@@ -1,19 +1,19 @@
-import { generateCandlesData, type Chart } from "@devexperts/dxcharts-lite";
+import type { Chart } from "@devexperts/dxcharts-lite";
 import type { PartialChartConfig } from "@devexperts/dxcharts-lite/dist/chart/chart.config";
 import type { Candle } from "@devexperts/dxcharts-lite/dist/chart/model/candle.model";
+
+import { addYAxisValue } from './utils';
 
 export type TChartsData = {
   title: string;
   dataSize?: number;
-  init?: ((api: Chart, data: Candle[]) => void);
+  init?: (api: Chart, data: Candle[]) => void;
 };
-
-const MAX_SCALE_LIMIT = 1200;
 
 export const DEFAULT_CHART_CONFIG: PartialChartConfig = {
   devexpertsPromoLink: true,
   components: {
-    chart: { type: 'candle' },
+    chart: { type: "candle" },
   },
   colors: {
     areaTheme: {
@@ -32,18 +32,18 @@ export const DEFAULT_CHART_CONFIG: PartialChartConfig = {
 export const CHARTS_LIST_INIT: TChartsData[] = [
   { title: "Default" },
   {
-    title: "View-only (Paginated)",
+    title: "View-only",
     dataSize: 9000,
-    init: (api) => {
+    init: (api, data) => {
       api.disableUserControls();
-      api.data.setXScale((api.scale.xEnd - MAX_SCALE_LIMIT), api.scale.xEnd);
-    }
+      setTimeout(() => api.data.setXScale(0, data.length, false), 1000);
+    },
   },
   {
-    title: "Bar",
+    title: "Baseline",
     dataSize: 2200,
     init: (api) => {
-      api.setChartType("bar");
+      api.setChartType("baseline");
     },
   },
   {
@@ -53,13 +53,19 @@ export const CHARTS_LIST_INIT: TChartsData[] = [
       api.setChartType("area");
     },
   },
-  /* {
-    title: "Updated (by 1s)",
-    dataSize: 5000,
-    init: (api) => {
-      setTimeout(() => {
-        api.data.addLastCandle({ hi: 122, lo: 100, timestamp: (+ new Date()), open: 1, close: 20, volume: 100 });
-      }, 1000);
-    }
-  }, */
+  {
+    title: "Multiple Values",
+    dataSize: 1000,
+    init: (api, data) => {
+      api.setChartType("line");
+      
+      const pane = api.paneManager.panes.CHART;
+      addYAxisValue(pane, data.length);
+    },
+  },
+  {
+    title: "Updated by second",
+    dataSize: 1000,
+    init: () => {},
+  },
 ];

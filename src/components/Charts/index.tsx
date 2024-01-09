@@ -1,24 +1,15 @@
-import {
-  Chart,
-  createChart,
-  generateCandlesData,
-} from "@devexperts/dxcharts-lite";
+import { Chart, createChart } from "@devexperts/dxcharts-lite";
 import { For, Show, createEffect, createSignal } from "solid-js";
 import { pipe } from "fp-ts/function";
-import { none, fromNullable, fold, type Option } from "fp-ts/Option";
+import { none, fromNullable, fold, type Option, flatMap } from "fp-ts/Option";
 
-import type { Candle } from "@devexperts/dxcharts-lite/dist/chart/model/candle.model";
-import { DEFAULT_CHART_CONFIG, CHARTS_LIST_INIT, type TChartsData } from "./data/charts.config";
+import {
+  DEFAULT_CHART_CONFIG,
+  CHARTS_LIST_INIT,
+  type TChartsData,
+} from "./charts.config";
 import css from "./style/charts.module.css";
-
-const createMockCandles = (size?: number) => {
-  return generateCandlesData({ quantity: size ?? 1000, withVolume: true });
-};
-
-const initChart = (data: Candle[], onInit?: Function) => (api: Chart) => {
-  onInit?.(api, data);
-  api.setData({ candles: data });
-};
+import { createMockCandles, initChart, addYAxisValue } from "./utils";
 
 export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
   let chartEl!: HTMLDivElement;
@@ -45,8 +36,18 @@ export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
     pipe(
       chartInstance(),
       fold(
-        () => {},
+        () => console.warn("REPOPULATE_ERROR: Couldn´t update the chart"),
         (c) => c.updateData({ candles: createMockCandles(dataSize) })
+      )
+    );
+
+  const addNewAxis = () =>
+    pipe(
+      chartInstance(),
+      flatMap((a) => fromNullable(a?.paneManager?.panes?.CHART)),
+      fold(
+        () => console.warn("NEW_AXIS_ERROR: Couldn´t create a new axis"),
+        (p) => addYAxisValue(p, dataSize)
       )
     );
 
@@ -54,7 +55,12 @@ export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
     <Show when={hasData} fallback={<code>w/o candles</code>}>
       <div>
         <code>🕯️ {chartData.length} candles: </code>
-        <button class={css.infoButton} onClick={repopulateChart}>Repopulate Chart</button>
+        <button class={css.infoButton} onClick={repopulateChart}>
+          🔀 Repopulate Chart
+        </button>
+        <button class={css.infoButton} onClick={addNewAxis}>
+          🔛 Add Y Axis
+        </button>
       </div>
     </Show>
   );
