@@ -34,13 +34,10 @@ export const CHARTS_LIST_INIT: TChartsData[] = [
   {
     title: "View-only (Paginated)",
     dataSize: 9000,
-    init: (api, data) => {
-      setTimeout(() => {
-        console.log('candle', data);
-        api.disableUserControls();
-        api.data.setXScale((api.scale.xEnd - MAX_SCALE_LIMIT), api.scale.xEnd);
-      }, 1000);
-    },
+    init: (api) => {
+      api.disableUserControls();
+      api.data.setXScale((api.scale.xEnd - MAX_SCALE_LIMIT), api.scale.xEnd);
+    }
   },
   {
     title: "Bar",

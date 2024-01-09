@@ -4,3 +4,23 @@
   height: auto;
   aspect-ratio: 2 / 1;
 }
+
+.infoBlock {
+  font-family: monospace;
+  font-size: .8rem;
+  margin-top: .5rem;
+}
+
+.infoButton {
+  border: none;
+  border-radius: 1rem;
+  background-color: #000;
+  color: white;
+  font-size: .8rem;
+  font-family: monospace;
+  padding: .5rem 1rem;
+}
+
+.infoButton:active {
+  filter: contrast(.7);
+}
