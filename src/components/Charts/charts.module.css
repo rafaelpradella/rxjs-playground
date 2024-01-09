@@ -6,8 +6,13 @@
 }
 
 .infoBlock {
+  color: rgba(255,255,255,.6);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   font-family: monospace;
-  font-size: .8rem;
+  font-size: .7rem;
+  gap: .75rem;
   margin-top: .5rem;
 }
 

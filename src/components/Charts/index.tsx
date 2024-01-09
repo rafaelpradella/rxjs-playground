@@ -8,7 +8,7 @@ import {
   CHARTS_LIST_INIT,
   type TChartsData,
 } from "./charts.config";
-import css from "./style/charts.module.css";
+import css from "./charts.module.css";
 import { createMockCandles, initChart, addYAxisValue } from "./utils";
 
 export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
@@ -53,15 +53,15 @@ export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
 
   const CandlesInfoNav = () => (
     <Show when={hasData} fallback={<code>w/o candles</code>}>
-      <div>
-        <code>🕯️ {chartData.length} candles: </code>
+      <>
+        <code>(🕯️ {chartData.length} candles)</code>
         <button class={css.infoButton} onClick={repopulateChart}>
           🔀 Repopulate Chart
         </button>
         <button class={css.infoButton} onClick={addNewAxis}>
           🔛 Add Y Axis
         </button>
-      </div>
+      </>
     </Show>
   );
 
