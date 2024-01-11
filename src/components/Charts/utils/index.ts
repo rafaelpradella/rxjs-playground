@@ -4,7 +4,7 @@ import type { Candle } from "@devexperts/dxcharts-lite/dist/chart/model/candle.m
 import type { PaneComponent } from "@devexperts/dxcharts-lite/dist/chart/components/pane/pane.component";
 
 export const createMockCandles = (size?: number, withVolume = true) => {
-  return generateCandlesData({ quantity: size ?? 1000, withVolume });
+  return size === 0 ? [] : generateCandlesData({ quantity: size ?? 1000, withVolume });
 };
 
 export const addYAxisValue = (pane: PaneComponent, length?: number) =>

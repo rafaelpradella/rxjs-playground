@@ -2,7 +2,19 @@
   background-color: #000;
   width: 100%;
   height: auto;
-  aspect-ratio: 2 / 1;
+  aspect-ratio: 3 / 1;
+}
+
+@media(max-width: 1200px) {
+  .wrapper {
+    aspect-ratio: 2 / 1;
+  }
+}
+
+@media(max-width: 680px) {
+  .wrapper {
+    aspect-ratio: 1.5 / 1;
+  }
 }
 
 .infoBlock {

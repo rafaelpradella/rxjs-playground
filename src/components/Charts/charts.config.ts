@@ -2,7 +2,7 @@ import type { Chart } from "@devexperts/dxcharts-lite";
 import type { PartialChartConfig } from "@devexperts/dxcharts-lite/dist/chart/chart.config";
 import type { Candle } from "@devexperts/dxcharts-lite/dist/chart/model/candle.model";
 
-import { addYAxisValue, createMockCandles } from './utils';
+import { addYAxisValue, createMockCandles } from "./utils";
 
 export type TChartsData = {
   title: string;
@@ -15,6 +15,7 @@ export const DEFAULT_CHART_CONFIG: PartialChartConfig = {
   components: {
     chart: { type: "candle" },
   },
+
   colors: {
     areaTheme: {
       lineColor: "#d70101",
@@ -29,16 +30,29 @@ export const DEFAULT_CHART_CONFIG: PartialChartConfig = {
   },
 };
 
+const requestIdleWithFallback = (cb: IdleRequestCallback, time = 1000) => {
+  "requestIdleCallback" in window
+    ? requestIdleCallback(cb, { timeout: time })
+    : setTimeout(cb, time);
+};
+
 export const CHARTS_LIST_INIT: TChartsData[] = [
-  { title: "Default" },
   {
     title: "View-only",
-    dataSize: 1800,
+    dataSize: 5000,
     init: (api, data) => {
       api.disableUserControls();
-      setTimeout(() => api.data.setXScale(0, data.length, false), 1000);
+      //Attempts to get setXScale to work on onInit:
+      //api.data.setXScale(0, data.length - 1);
+      //❌ api.chartModel.scale.setXScale(0, data.length);
+      //❌ api.scale.setXScale(0, data.length);
+      //❌ api.scaleModel.xStart = 0;
+      //❌api.scaleModel.xEnd = data.length;
+      //✅ setTimeout(() => api.data.setXScale(0, data.length), 1000);
+      requestIdleWithFallback(() => api.data.setXScale(0, data.length));
     },
   },
+  { title: "Default" },
   {
     title: "Baseline",
     dataSize: 2200,
@@ -58,21 +72,25 @@ export const CHARTS_LIST_INIT: TChartsData[] = [
     dataSize: 1000,
     init: (api, data) => {
       api.setChartType("line");
-      
+
       const pane = api.paneManager.panes.CHART;
       addYAxisValue(pane, data.length);
     },
   },
   {
     title: "Updated by second",
-    dataSize: 50,
+    dataSize: 0,
     init: (api) => {
-      api.setChartType('histogram');
+      let length = 0;
 
+      api.disableUserControls();
+      api.setChartType("histogram");
       setInterval(() => {
-        const newCandle = createMockCandles(1)[0];
-        newCandle.timestamp = (+ new Date());
+        length++;
+        const newCandle = createMockCandles(1, false)[0];
+        newCandle.timestamp = +new Date();
         api.data.addLastCandle(newCandle);
+        requestIdleWithFallback(() => api.data.setXScale(0, length));
       }, 1000);
     },
   },
