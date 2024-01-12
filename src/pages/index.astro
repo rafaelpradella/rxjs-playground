@@ -1,15 +1,12 @@
 ---
-import Layout from '../layouts/Layout.astro';
-
-import Logo from '../components/Logo.astro';
-import { Playground } from '../components/Playground';
+import Layout from '@layouts/Layout.astro';
+import { ChartsBody } from '@components/Charts';
 ---
 
-<Layout title="RxJS | Playground" theme='rxjs'>
+<Layout title="dxCharts Lite | Playground" theme="devexp">
 	<main>
-		<Logo fill='#000' />
-		<h1><span class="text-gradient">RxJS</span> Playground</h1>
-		<Playground client:only="solid" />
+		<h1><span class="text-gradient">dxCharts</span> Playground</h1>
+    <ChartsBody client:only="solid" />
 	</main>
 </Layout>
 
@@ -17,7 +14,7 @@ import { Playground } from '../components/Playground';
 	main {
 		margin: auto;
 		padding: 1rem;
-		width: 800px;
+		width: 100%;
 		max-width: calc(100% - 2rem);
 		color: white;
 		font-size: 20px;
@@ -27,8 +24,8 @@ import { Playground } from '../components/Playground';
 		font-size: 4rem;
 		font-weight: 700;
 		line-height: 1;
+		margin-bottom: 1.5rem;
 		text-align: center;
-		margin-bottom: 1em;
 	}
 	.text-gradient {
 		background-image: var(--accent-gradient);

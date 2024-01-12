@@ -12,14 +12,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     ],\
     "dependencyTreeRoots": [\
       {\
-        "name": "rxjs-playground",\
+        "name": "dxcharts-playground",\
         "reference": "workspace:."\
       }\
     ],\
     "enableTopLevelFallback": true,\
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
-      ["rxjs-playground", ["workspace:."]]\
+      ["dxcharts-playground", ["workspace:."]]\
     ],\
     "fallbackPool": [\
     ],\
@@ -5631,11 +5631,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
-      ["rxjs-playground", [\
+      ["dxcharts-playground", [\
         ["workspace:.", {\
           "packageLocation": "./",\
           "packageDependencies": [\
-            ["rxjs-playground", "workspace:."],\
+            ["dxcharts-playground", "workspace:."],\
             ["@astrojs/check", "virtual:48eebb5e0742d204c2d21e872a59916bb8242fa4382ba263ebd82c5c2133944929415eb6c33508cd0e51dc4bd3e51f39223aad628ff7e6589ea91a7b26f2515c#npm:0.3.4"],\
             ["@astrojs/solid-js", "virtual:48eebb5e0742d204c2d21e872a59916bb8242fa4382ba263ebd82c5c2133944929415eb6c33508cd0e51dc4bd3e51f39223aad628ff7e6589ea91a7b26f2515c#npm:3.0.3"],\
             ["astro", "npm:4.0.9"],\
