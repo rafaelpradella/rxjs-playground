@@ -12,10 +12,15 @@
   "dependencies": {
     "@astrojs/check": "^0.3.4",
     "@astrojs/netlify": "^4.1.0",
+    "@astrojs/react": "^3.0.9",
     "@astrojs/solid-js": "^3.0.3",
     "@devexperts/dxcharts-lite": "^2.4.4",
+    "@types/react": "^18.2.47",
+    "@types/react-dom": "^18.2.18",
     "astro": "^4.0.9",
     "fp-ts": "^2.16.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rxjs": "^7.8.1",
     "solid-js": "^1.8.7",
     "typescript": "^5.3.3"
