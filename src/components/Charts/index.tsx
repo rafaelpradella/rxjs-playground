@@ -27,6 +27,8 @@ export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
       chartInstance(),
       fold(
         () => console.error("Couldn´t init Chart"),
+        //❌ (a) => { api.data.setXScale(0, chartData.length);
+        //❌ initChart(a)(chartData, onInit)}
         initChart(chartData, init)
       )
     );

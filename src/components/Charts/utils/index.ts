@@ -20,6 +20,7 @@ export const addYAxisValue = (pane: PaneComponent, length?: number) =>
 export const initChart =
   (data: Candle[], onInit?: Function) => (api: Chart) => {
     api.setData({ candles: data });
+    //❌ reordering the setData;
     //❌ api.data.setXScale(0, data.length);
     onInit?.(api, data);
   };
