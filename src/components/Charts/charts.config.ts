@@ -81,6 +81,7 @@ export const CHARTS_LIST_INIT: TChartsData[] = [
     title: "Updated by second",
     dataSize: 0,
     init: (api) => {
+      const MAX_VIEW_SIZE = 100;
       let length = 0;
 
       api.disableUserControls();
@@ -90,7 +91,9 @@ export const CHARTS_LIST_INIT: TChartsData[] = [
         const newCandle = createMockCandles(1, false)[0];
         newCandle.timestamp = +new Date();
         api.data.addLastCandle(newCandle);
-        requestIdleWithFallback(() => api.data.setXScale(0, length));
+        requestIdleWithFallback(() => {
+           api.data.setXScale(length > MAX_VIEW_SIZE ? (length - MAX_VIEW_SIZE) : 0, length);
+        });
       }, 1000);
     },
   },
