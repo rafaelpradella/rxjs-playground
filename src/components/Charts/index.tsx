@@ -1,5 +1,5 @@
 import { Chart, createChart } from "@devexperts/dxcharts-lite";
-import { For, Show, createEffect, createSignal } from "solid-js";
+import { useState, useCallback } from "react";
 import { pipe } from "fp-ts/function";
 import { none, fromNullable, fold, type Option, flatMap } from "fp-ts/Option";
 
@@ -12,19 +12,18 @@ import css from "./charts.module.css";
 import { createMockCandles, initChart, addYAxisValue } from "./utils";
 
 export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
-  let chartEl!: HTMLDivElement;
   const chartData = createMockCandles(dataSize);
   const hasData = !!chartData && chartData?.length > 0;
 
-  const [chartInstance, setChartInstance] = createSignal<Option<Chart>>(none);
+  const [chartInstance, setChartInstance] = useState<Option<Chart>>(none);
 
-  createEffect(() => {
-    if (!chartData || !chartEl) return;
-    const api = createChart(chartEl, DEFAULT_CHART_CONFIG);
+  const chartInitRef = useCallback((node: HTMLElement) => {
+    if (!node) return;
+    const api = createChart(node, DEFAULT_CHART_CONFIG);
 
     setChartInstance(fromNullable(api));
     pipe(
-      chartInstance(),
+      fromNullable(api),
       fold(
         () => console.error("Couldn´t init Chart"),
         //❌ (a) => { api.data.setXScale(0, chartData.length);
@@ -32,11 +31,11 @@ export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
         initChart(chartData, init)
       )
     );
-  });
+  }, []);
 
   const repopulateChart = () =>
     pipe(
-      chartInstance(),
+      chartInstance,
       fold(
         () => console.warn("REPOPULATE_ERROR: Couldn´t update the chart"),
         (c) => c.updateData({ candles: createMockCandles(dataSize) })
@@ -45,7 +44,7 @@ export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
 
   const addNewAxis = () =>
     pipe(
-      chartInstance(),
+      chartInstance,
       flatMap((a) => fromNullable(a?.paneManager?.panes?.CHART)),
       fold(
         () => console.warn("NEW_AXIS_ERROR: Couldn´t create a new axis"),
@@ -53,27 +52,29 @@ export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
       )
     );
 
-  const CandlesInfoNav = () => (
-    <Show when={hasData} fallback={<code>w/o candles</code>}>
+  const CandlesInfoNav = () => {
+    if(!hasData) return <code>w/o candles</code>;
+
+    return (
       <>
         <code>(🕯️ {chartData.length} candles)</code>
-        <button class={css.infoButton} onClick={repopulateChart}>
+        <button className={css.infoButton} onClick={repopulateChart}>
           🔀 Repopulate Chart
         </button>
-        <button class={css.infoButton} onClick={addNewAxis}>
+        <button className={css.infoButton} onClick={addNewAxis}>
           🔛 Add Y Axis
         </button>
       </>
-    </Show>
-  );
+    )
+  };
 
   return (
     <section>
       <h2>{title}</h2>
-      <div class={css.wrapper} ref={chartEl}>
+      <div className={css.wrapper} ref={chartInitRef}>
         {!hasData && <code>LOADING...</code>}
       </div>
-      <div class={css.infoBlock}>
+      <div className={css.infoBlock}>
         <CandlesInfoNav />
       </div>
     </section>
@@ -82,12 +83,10 @@ export const ChartItem = ({ title, init, dataSize }: TChartsData) => {
 
 export const ChartsBody = () => {
   return (
-    <div style={{ display: "flex", "flex-direction": "column", gap: "2rem" }}>
-      <For each={CHARTS_LIST_INIT}>
-        {({ title, init, dataSize }) => (
-          <ChartItem title={title} init={init} dataSize={dataSize} />
-        )}
-      </For>
+    <div style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+      {CHARTS_LIST_INIT.map(({ title, init, dataSize }, i) => (
+        <ChartItem key={i} title={title} init={init} dataSize={dataSize} />
+      ))}
     </div>
   );
 };
